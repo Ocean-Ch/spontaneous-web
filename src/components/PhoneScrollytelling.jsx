@@ -6,11 +6,13 @@ import BubbleReveal from './BubbleReveal'
 import { featureCards } from '../constants/featureCards'
 import { PHONE_SCROLL } from '../constants/animations'
 import { GRADIENTS } from '../constants/colors'
+import { useMobile } from '../hooks/useMobile'
 
 const FEATURE_CARD_HEIGHT = 'min-h-[330px]'
 
 const PhoneScrollytelling = ({ textColor }) => {
   const phoneSectionRef = useRef(null)
+  const isMobile = useMobile()
   const { scrollYProgress: phoneScroll } = useScroll({
     target: phoneSectionRef,
     offset: ["start start", "end end"]
@@ -19,7 +21,12 @@ const PhoneScrollytelling = ({ textColor }) => {
   // Phone animations
   const phoneOpacity = useTransform(phoneScroll, PHONE_SCROLL.FADE_IN, [0, 1])
   const phoneScale = useTransform(phoneScroll, PHONE_SCROLL.FADE_IN, [0.9, 1])
-  const phoneX = useTransform(phoneScroll, PHONE_SCROLL.MOVE_LEFT, ["0%", "-25vw"])
+  // On mobile, don't move phone left - keep it centered
+  const phoneX = useTransform(
+    phoneScroll, 
+    PHONE_SCROLL.MOVE_LEFT, 
+    isMobile ? ["0%", "0%"] : ["0%", "-25vw"]
+  )
 
   // Text animations
   const t1Y = useTransform(phoneScroll, PHONE_SCROLL.TEXT_1, [20, 0])
@@ -59,13 +66,15 @@ const PhoneScrollytelling = ({ textColor }) => {
         {/* WRAP EVERYTHING IN THIS EXIT CONTAINER */}
         <motion.div
           style={{ opacity: exitOpacity, scale: exitScale, y: exitY }}
-          className="relative w-full max-w-7xl mx-auto h-full flex items-center justify-center"
+          className={`relative w-full max-w-7xl mx-auto h-full flex ${
+            isMobile ? 'flex-col items-center justify-start' : 'items-center justify-center'
+          }`}
         >
 
           {/* PHONE */}
           <motion.div
             style={{ opacity: phoneOpacity, x: phoneX, scale: phoneScale }}
-            className="relative z-20 flex-shrink-0"
+            className={`relative z-20 flex-shrink-0 ${isMobile ? 'mt-8 mb-4' : ''}`}
           >
             <div className="scale-100 sm:scale-110 md:scale-125 shadow-2xl shadow-orange-500/20 rounded-[3rem]">
               <PhoneMockup
@@ -77,9 +86,17 @@ const PhoneScrollytelling = ({ textColor }) => {
             </div>
           </motion.div>
 
-          {/* RIGHT TEXT BLOCK */}
-          <div className="absolute w-full md:w-1/2 right-0 top-[18vh] px-8 md:pl-16 z-10 pointer-events-none">
-            <div className="max-w-lg ml-auto md:ml-0 text-center md:text-left md:p-0 flex flex-col gap-6">
+          {/* TEXT BLOCK - Positioned differently on mobile vs desktop */}
+          <div className={`${
+            isMobile 
+              ? 'relative w-full px-4 mt-4' 
+              : 'absolute w-full md:w-1/2 right-0 top-[18vh] px-8 md:pl-16'
+          } z-10 pointer-events-none`}>
+            <div className={`max-w-lg ${
+              isMobile 
+                ? 'mx-auto text-center' 
+                : 'ml-auto md:ml-0 text-center md:text-left md:p-0'
+            } flex flex-col gap-6`}>
 
               {/* HEADERS */}
               <motion.div style={{ y: t1Y }} className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
