@@ -9,11 +9,15 @@ const AppStoreButtons = () => {
       transition={{ duration: 0.6, delay: 0.5 }}
       className="flex flex-wrap justify-center gap-6"
     >
-      {/* Apple App Store - Solid Black, White Text */}
+      {/* Apple App Store */}
       <motion.button
-        whileHover={{ scale: 1.05, y: -2 }}
+        // 1. Tighter Scale: 1.05 is standard for UI buttons
+        whileHover={{ scale: 1.05, y: -5 }}
         whileTap={{ scale: 0.95 }}
-        className="relative group flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-xl hover:shadow-2xl transition-all"
+        // 2. Snappy Physics: High stiffness = fast start. Higher damping = no wobble.
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        // 3. Removed 'transition-all': This is crucial to fix the "gluey" feel
+        className="relative group flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-xl hover:shadow-2xl"
       >
         <Apple className="w-8 h-8 fill-current" />
         <div className="text-left">
@@ -21,17 +25,18 @@ const AppStoreButtons = () => {
           <div className="text-lg font-bold leading-none">App Store</div>
         </div>
         
-        {/* 'Soon' Badge */}
         <div className="absolute -top-3 -right-3 px-2 py-1 bg-orange-500 rounded-full text-[10px] font-bold text-white shadow-sm border-2 border-[#FFFBF7]">
           SOON
         </div>
       </motion.button>
 
-      {/* Google Play - Solid Black, White Text */}
+      {/* Google Play */}
       <motion.button
-        whileHover={{ scale: 1.05, y: -2 }}
+        whileHover={{ scale: 1.05, y: -5 }}
         whileTap={{ scale: 0.95 }}
-        className="relative group flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-xl hover:shadow-2xl transition-all"
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        // Removed 'transition-all' here too
+        className="relative group flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-xl hover:shadow-2xl"
       >
         <Smartphone className="w-8 h-8 fill-current" />
         <div className="text-left">
@@ -39,7 +44,6 @@ const AppStoreButtons = () => {
           <div className="text-lg font-bold leading-none">Google Play</div>
         </div>
         
-         {/* 'Soon' Badge */}
         <div className="absolute -top-3 -right-3 px-2 py-1 bg-orange-500 rounded-full text-[10px] font-bold text-white shadow-sm border-2 border-[#FFFBF7]">
           SOON
         </div>
