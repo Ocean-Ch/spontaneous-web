@@ -25,6 +25,7 @@ const PhoneScrollytelling = ({ textColor }) => {
 
   // Line 2: The Punchline (Appears 40% - 50%)
   const t2Y = useTransform(phoneScroll, [0.4, 0.5], [20, 0])
+  const glowOpacity = useTransform(phoneScroll, [0.4, 0.45], [0, 1])
 
   // Line 3: Description (Appears 50% - 60%)
   const t3Y = useTransform(phoneScroll, [0.5, 0.6], [20, 0])
@@ -77,6 +78,7 @@ const PhoneScrollytelling = ({ textColor }) => {
                 <motion.div 
                   className="absolute -inset-12 -z-10 pointer-events-none"
                   style={{
+                    opacity: glowOpacity,
                     background: 'linear-gradient(90deg, rgba(241, 142, 72, 0.5) 0%, rgba(255, 77, 77, 0.5) 50%, rgba(192, 38, 211, 0.5) 100%)',
                     filter: 'blur(80px)',
                     width: '120%',
