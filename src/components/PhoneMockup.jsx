@@ -1,15 +1,17 @@
 import { motion, useTransform } from 'framer-motion'
 import { Lightbulb } from 'lucide-react'
 
-const PhoneMockup = ({ imageSrc, scrollProgress }) => {
+const PhoneMockup = ({ imageSrc, scrollProgress, scrollStart = 0.3, scrollEnd = 0.85 }) => {
   // Calculate image scroll translation
   // The image should scroll from top (0) to reveal more content below
   // The long screenshot will scroll upward (negative translateY) as user scrolls
+  // scrollStart: when phone is fully moved to the left (30% = 0.3)
+  // scrollEnd: when image has finished scrolling (85% = 0.85)
   // Using pixel-based translation - adjust maxScrollDistance based on your image height
   const maxScrollDistance = -2500 // Adjust this value based on your long_screenshot.png height
   const imageTranslateY = useTransform(
     scrollProgress,
-    [0, 1],
+    [scrollStart, scrollEnd],
     [0, maxScrollDistance]
   )
 
