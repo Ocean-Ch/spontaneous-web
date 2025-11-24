@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import AppStoreButtons from './AppStoreButtons'
+import AnimatedSpontaneous from './AnimatedSpontaneous'
 
 const Hero = () => {
   return (
@@ -21,7 +22,7 @@ const Hero = () => {
         </div>
       </motion.div>
 
-      {/* 2. HEADLINE: Added Gradient Text */}
+      {/* 2. HEADLINE: Animated 3D Gradient Text */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -29,9 +30,7 @@ const Hero = () => {
         className="text-6xl sm:text-7xl lg:text-9xl font-bold tracking-tight mb-8 max-w-5xl mx-auto"
       >
         <span className="text-slate-900">Be</span>{' '}
-        <span className="bg-gradient-to-r from-[#F18E48] to-[#ff4d4d] bg-clip-text text-transparent pb-2">
-          Spontaneous.
-        </span>
+        <AnimatedSpontaneous />
       </motion.h1>
 
       <motion.p
