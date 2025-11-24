@@ -9,20 +9,20 @@ function App() {
   const { containerRef, backgroundColor, textColor } = useScrollAnimations()
 
   return (
-    <motion.div 
+    <motion.div
       ref={containerRef}
       style={{ backgroundColor }}
       className="min-h-screen"
     >
       <main className="pb-32">
-        
+
         {/* HERO */}
         <section className="h-[80vh] flex flex-col items-center justify-center relative">
           <Hero />
-          <ScrollIndicator 
+          <ScrollIndicator
             className="absolute left-1/2 -translate-x-1/2"
             style={{ bottom: 'clamp(0.5rem, 1vh, 1.25rem)' }}
-            color={textColor} 
+            color={textColor}
           />
         </section>
 
@@ -34,20 +34,27 @@ function App() {
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-20%" }} 
+            viewport={{ once: true, margin: "-20%" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full"
           >
             <div className="text-center mb-12">
-              <motion.h2 
-                 style={{ color: textColor }}
-                 className="text-3xl sm:text-5xl font-bold mb-6"
+              <motion.h2
+                style={{ color: textColor }}
+                className="text-3xl sm:text-5xl font-bold mb-6"
               >
-                Captured on <span className="text-[#F18E48]">Spontaneous</span>
+                Captured on 
+                <span className="text-[#F18E48]"
+                  style={{
+                    background: 'linear-gradient(90deg, #F18E48 0%, #ff4d4d 50%, #c026d3 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}> Spontaneous</span>
               </motion.h2>
             </div>
-            <ImageFan 
-              images={[ '/sc1.jpg', '/sc6.jpg', '/sc2.jpg', '/sc4.jpg', '/sc5.jpg' ]}
+            <ImageFan
+              images={['/sc1.jpg', '/sc6.jpg', '/sc2.jpg', '/sc4.jpg', '/sc5.jpg']}
             />
           </motion.div>
         </section>
