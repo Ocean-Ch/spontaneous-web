@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import PhoneMockup from './PhoneMockup'
+import LetterReveal from './LetterReveal'
 
 const PhoneScrollytelling = ({ textColor }) => {
   const phoneSectionRef = useRef(null)
@@ -17,18 +18,15 @@ const PhoneScrollytelling = ({ textColor }) => {
   // Moves left quickly to make room for text
   const phoneX = useTransform(phoneScroll, [0.1, 0.3], ["0%", "-25vw"]) 
 
-  // 3. TEXT REVEAL LOGIC (Apple Style - Staggered)
+  // 3. TEXT REVEAL LOGIC (Apple Style - Staggered with letter-by-letter animation)
   
   // Line 1: Headline (Appears 30% - 40%)
-  const t1Opacity = useTransform(phoneScroll, [0.3, 0.4], [0, 1])
   const t1Y = useTransform(phoneScroll, [0.3, 0.4], [20, 0])
 
   // Line 2: The Punchline (Appears 40% - 50%)
-  const t2Opacity = useTransform(phoneScroll, [0.4, 0.5], [0, 1])
   const t2Y = useTransform(phoneScroll, [0.4, 0.5], [20, 0])
 
   // Line 3: Description (Appears 50% - 60%)
-  const t3Opacity = useTransform(phoneScroll, [0.5, 0.6], [0, 1])
   const t3Y = useTransform(phoneScroll, [0.5, 0.6], [20, 0])
 
   return (
@@ -57,28 +55,45 @@ const PhoneScrollytelling = ({ textColor }) => {
             <div className="max-w-lg ml-auto md:ml-0 text-center md:text-left md:p-0 flex flex-col gap-6">
               
               {/* Line 1: The Header */}
-              <motion.h2 
-                style={{ opacity: t1Opacity, y: t1Y, color: textColor }}
+              <motion.div
+                style={{ y: t1Y }}
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
               >
-                Daily Prompts.
-              </motion.h2>
+                <LetterReveal
+                  text="Daily Prompts."
+                  scrollProgress={phoneScroll}
+                  startProgress={0.3}
+                  endProgress={0.4}
+                  style={{ color: textColor }}
+                />
+              </motion.div>
 
               {/* Line 2: The Accent/Punchline */}
-              <motion.h3 
-                style={{ opacity: t2Opacity, y: t2Y }}
+              <motion.div
+                style={{ y: t2Y }}
                 className="text-2xl sm:text-4xl font-semibold text-[#F18E48]"
               >
-                Unfiltered Connections.
-              </motion.h3>
+                <LetterReveal
+                  text="Unfiltered Connections."
+                  scrollProgress={phoneScroll}
+                  startProgress={0.4}
+                  endProgress={0.5}
+                />
+              </motion.div>
               
               {/* Line 3: The Description */}
-              <motion.p 
-                style={{ opacity: t3Opacity, y: t3Y, color: textColor }}
+              <motion.div
+                style={{ y: t3Y }}
                 className="text-lg sm:text-xl opacity-80 leading-relaxed"
               >
-                Reveal one of three daily photo prompts. No algorithms, no influencers—just you and your friends capturing life as it happens.
-              </motion.p>
+                <LetterReveal
+                  text="Reveal one of three daily photo prompts. No algorithms, no influencers—just you and your friends capturing life as it happens."
+                  scrollProgress={phoneScroll}
+                  startProgress={0.5}
+                  endProgress={0.6}
+                  style={{ color: textColor }}
+                />
+              </motion.div>
               
             </div>
           </div>
