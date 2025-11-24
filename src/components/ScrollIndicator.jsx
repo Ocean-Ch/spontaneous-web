@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 
-const ScrollIndicator = ({ className = '' }) => {
+const ScrollIndicator = ({ className = '', color, style }) => {
+  const resolvedColor = color ?? '#0f172a'
+  
   return (
     <motion.div
-      className={`flex flex-col items-center text-xs uppercase tracking-[0.3em] text-white/70 ${className}`}
+      className={`flex flex-col items-center text-xs uppercase tracking-[0.3em] ${className}`}
+      style={{ color: resolvedColor, ...style }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 1.2, duration: 0.8 }}
@@ -13,9 +16,10 @@ const ScrollIndicator = ({ className = '' }) => {
       <motion.div
         animate={{ y: [0, 8, 0] }}
         transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-        className="rounded-full border border-white/30 p-2 bg-white/10 backdrop-blur-sm"
+        className="rounded-full border p-2 backdrop-blur-sm bg-white/10"
+        style={{ borderColor: resolvedColor }}
       >
-        <ChevronDown className="w-4 h-4 text-white" />
+        <ChevronDown className="w-4 h-4" style={{ color: resolvedColor }} />
       </motion.div>
     </motion.div>
   )

@@ -19,7 +19,11 @@ function App() {
         {/* HERO */}
         <section className="h-[80vh] flex flex-col items-center justify-center relative">
           <Hero />
-          <ScrollIndicator className="absolute bottom-10" />
+          <ScrollIndicator 
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{ bottom: 'clamp(0.5rem, 1vh, 1.25rem)' }}
+            color={textColor} 
+          />
         </section>
 
         {/* PHONE SCROLLYTELLING */}

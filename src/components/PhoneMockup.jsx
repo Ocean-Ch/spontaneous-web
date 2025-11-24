@@ -22,7 +22,7 @@ const PhoneMockup = ({ imageSrc, scrollProgress, scrollStart = 0.3, scrollEnd = 
   const logoScale = useTransform(scrollProgress, [fadeStart, scrollEnd], [0.2, 0.65])
   
   // Background color transition from deep navy to warm off-white for smoother reveal
-  const backgroundColor = useTransform(scrollProgress, [fadeStart, scrollEnd], ['#090D1F', '#090D1F'])
+  const backgroundColor = useTransform(scrollProgress, [fadeStart, scrollEnd], ['#090D1F', '#FFEFE0'])
 
   return (
     <motion.div
