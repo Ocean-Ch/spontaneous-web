@@ -16,24 +16,13 @@ const PhoneMockup = ({ imageSrc, scrollProgress, scrollStart = 0.3, scrollEnd = 
 
   // Fade out image and fade in logo near the end
   // Start transition at 75% of scrollEnd, complete at scrollEnd
-  const fadeStart = scrollEnd * 0.85
-  const imageOpacity = useTransform(
-    scrollProgress,
-    [fadeStart, scrollEnd],
-    [1, 0]
-  )
-  const logoOpacity = useTransform(
-    scrollProgress,
-    [fadeStart, scrollEnd],
-    [0, 1]
-  )
+  const fadeStart = scrollEnd * 0.80
+  const imageOpacity = useTransform(scrollProgress, [fadeStart, scrollEnd], [1, 0])
+  const logoOpacity = useTransform(scrollProgress, [fadeStart, scrollEnd], [0, 1])
+  const logoScale = useTransform(scrollProgress, [fadeStart, scrollEnd], [0.3, 0.7])
   
-  // Background color transition from black to white
-  const backgroundColor = useTransform(
-    scrollProgress,
-    [fadeStart, scrollEnd],
-    ['#000000', '#ffffff']
-  )
+  // Background color transition from deep navy to warm off-white for smoother reveal
+  const backgroundColor = useTransform(scrollProgress, [fadeStart, scrollEnd], ['#080c1b', '#fff8f1'])
 
   return (
     <motion.div
@@ -91,12 +80,12 @@ const PhoneMockup = ({ imageSrc, scrollProgress, scrollStart = 0.3, scrollEnd = 
             {/* Logo - Fades in at the end */}
             <motion.div
               className="absolute inset-0 flex items-center justify-center z-20"
-              style={{ opacity: logoOpacity }}
+              style={{ opacity: logoOpacity, scale: logoScale }}
             >
               <img
                 src="/logo.png"
                 alt="Spontaneous logo"
-                className="max-w-[60%] h-auto"
+                className="max-w-[45%] h-auto drop-shadow-2xl"
               />
             </motion.div>
           </motion.div>
