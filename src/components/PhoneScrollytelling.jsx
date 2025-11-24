@@ -91,8 +91,8 @@ const PhoneScrollytelling = ({ textColor }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6 }}
-              className="text-4xl sm:text-5xl font-bold leading-tight"
-              style={{ color: textColor }}
+              className="text-4xl sm:text-5xl font-bold leading-tight text-white"
+              style={{ color: textColor || 'white' }}
             >
               Daily Prompts.
             </motion.h2>
@@ -122,8 +122,8 @@ const PhoneScrollytelling = ({ textColor }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl opacity-80 leading-relaxed"
-              style={{ color: textColor }}
+              className="text-lg sm:text-xl opacity-80 leading-relaxed text-white"
+              style={{ color: textColor || 'white' }}
             >
               Reveal one of three daily photo prompts. No algorithms, no influencers—just you and your friends capturing life as it happens.
             </motion.p>
@@ -142,7 +142,10 @@ const PhoneScrollytelling = ({ textColor }) => {
                   <h4 className={`text-xl font-semibold mb-2 bg-gradient-to-r ${feature.gradient} text-transparent bg-clip-text`}>
                     {feature.title}
                   </h4>
-                  <p className="text-sm leading-relaxed" style={{ color: textColor, opacity: 0.8 }}>
+                  <p 
+                    className="text-sm leading-relaxed text-white" 
+                    style={{ color: textColor || 'white', opacity: 0.8 }}
+                  >
                     {feature.description}
                   </p>
                 </motion.div>
