@@ -11,10 +11,22 @@ import { useMobile } from '../hooks/useMobile'
 const FEATURE_CARD_HEIGHT = 'min-h-[330px]'
 
 const PhoneScrollytelling = forwardRef(({ textColor }, ref) => {
-  const phoneSectionRef = ref || useRef(null)
+  const internalRef = useRef(null)
   const isMobile = useMobile()
+  
+  // Create a callback ref that sets both the forwarded ref and internal ref
+  const setRef = (node) => {
+    internalRef.current = node
+    if (typeof ref === 'function') {
+      ref(node)
+    } else if (ref) {
+      ref.current = node
+    }
+  }
+  
+  // useScroll needs a ref - it will work even if the element isn't mounted yet
   const { scrollYProgress: phoneScroll } = useScroll({
-    target: phoneSectionRef,
+    target: internalRef,
     offset: ["start start", "end end"]
   })
 
@@ -56,101 +68,173 @@ const PhoneScrollytelling = forwardRef(({ textColor }, ref) => {
   const exitScale = useTransform(phoneScroll, PHONE_SCROLL.EXIT, [1, 0.95])
   const exitY = useTransform(phoneScroll, PHONE_SCROLL.EXIT, [0, -100])
 
-  // Mobile: Render as normal scrollable section
+  // Mobile: Render with scroll hijacking
   if (isMobile) {
+    // Mobile scroll thresholds:
+    // 0-0.15: Phone enters and centers (completely hidden -> fully visible and centered)
+    // 0.15-0.85: Scroll hijacking for internal image scrolling
+    // 0.85-1.0: Phone exits, text appears
+    
+    const MOBILE_PHONE_ENTER_START = 0
+    const MOBILE_PHONE_ENTER_END = 0.15
+    const MOBILE_IMAGE_SCROLL_START = 0.15
+    const MOBILE_IMAGE_SCROLL_END = 0.85
+    const MOBILE_PHONE_EXIT_START = 0.85
+    const MOBILE_PHONE_EXIT_END = 1.0
+    
+    // Phone scale: starts small, scales to full during enter, stays full during scroll, then scales down on exit
+    const mobilePhoneScale = useTransform(phoneScroll, (latest) => {
+      if (latest < MOBILE_PHONE_ENTER_END) {
+        // During enter phase, scale from 0.8 to 1
+        const enterProgress = latest / MOBILE_PHONE_ENTER_END
+        return 0.8 + (0.2 * enterProgress)
+      } else if (latest < MOBILE_PHONE_EXIT_START) {
+        // During image scroll, stay at full scale
+        return 1
+      } else {
+        // During exit phase, scale down slightly
+        const exitProgress = (latest - MOBILE_PHONE_EXIT_START) / (MOBILE_PHONE_EXIT_END - MOBILE_PHONE_EXIT_START)
+        return 1 - (0.1 * exitProgress)
+      }
+    })
+    
+    // Combine enter and exit animations - phone is visible during image scroll (0.15-0.85)
+    const finalPhoneOpacity = useTransform(phoneScroll, (latest) => {
+      if (latest < MOBILE_PHONE_ENTER_END) {
+        // During enter phase, use enter opacity
+        return latest / MOBILE_PHONE_ENTER_END
+      } else if (latest < MOBILE_PHONE_EXIT_START) {
+        // During image scroll, fully visible
+        return 1
+      } else {
+        // During exit phase, fade out
+        const exitProgress = (latest - MOBILE_PHONE_EXIT_START) / (MOBILE_PHONE_EXIT_END - MOBILE_PHONE_EXIT_START)
+        return 1 - exitProgress
+      }
+    })
+    
+    const finalPhoneY = useTransform(phoneScroll, (latest) => {
+      if (latest < MOBILE_PHONE_ENTER_END) {
+        // During enter phase, move from below to center
+        const enterProgress = latest / MOBILE_PHONE_ENTER_END
+        return 100 * (1 - enterProgress)
+      } else if (latest < MOBILE_PHONE_EXIT_START) {
+        // During image scroll, stay centered
+        return 0
+      } else {
+        // During exit phase, move up
+        const exitProgress = (latest - MOBILE_PHONE_EXIT_START) / (MOBILE_PHONE_EXIT_END - MOBILE_PHONE_EXIT_START)
+        return -50 * exitProgress
+      }
+    })
+    
     return (
       <section
-        ref={phoneSectionRef}
-        className="relative w-full py-20 px-4 mt-8"
+        ref={setRef}
+        className="relative h-[400vh] w-full"
+        style={{ backgroundColor: 'inherit' }}
       >
-        <div className="max-w-2xl mx-auto flex flex-col items-center gap-12">
-          {/* PHONE */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6 }}
-            className="relative z-20 flex-shrink-0"
-          >
-            <div className="scale-100 shadow-2xl shadow-orange-500/20 rounded-[3rem]">
-              <PhoneMockup
-                imageSrc="/long_screenshot.png"
-                scrollProgress={phoneScroll}
-                scrollStart={PHONE_SCROLL.IMAGE_SCROLL.START}
-                scrollEnd={PHONE_SCROLL.IMAGE_SCROLL.END}
-              />
-            </div>
-          </motion.div>
-
-          {/* TEXT BLOCK */}
-          <div className="w-full text-center flex flex-col gap-6">
-
-            {/* HEADERS */}
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6 }}
-              className="text-4xl sm:text-5xl font-bold leading-tight text-white"
-              style={{ color: textColor || 'white' }}
-            >
-              Daily Prompts.
-            </motion.h2>
-
+        <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+          <div className="max-w-2xl mx-auto flex flex-col items-center gap-12 px-4 w-full">
+            {/* PHONE - Enters, stays centered for image scroll, then exits */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative text-2xl sm:text-3xl font-semibold inline-block"
+              style={{ 
+                opacity: finalPhoneOpacity,
+                scale: mobilePhoneScale,
+                y: finalPhoneY
+              }}
+              className="relative z-20 flex-shrink-0"
             >
-              <motion.div
-                className="absolute -inset-12 -z-10 pointer-events-none"
-                style={{
-                  background: GRADIENTS.glow,
-                  filter: 'blur(80px)',
-                }}
-              />
-              <div className="relative z-0 bg-gradient-to-r from-orange-400 via-red-500 to-purple-600 bg-clip-text text-transparent">
-                Unfiltered Connections.
+              <div className="scale-100 shadow-2xl shadow-orange-500/20 rounded-[3rem]">
+                <PhoneMockup
+                  imageSrc="/long_screenshot.png"
+                  scrollProgress={phoneScroll}
+                  scrollStart={MOBILE_IMAGE_SCROLL_START}
+                  scrollEnd={MOBILE_IMAGE_SCROLL_END}
+                />
               </div>
             </motion.div>
 
-            {/* DESCRIPTION */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl opacity-80 leading-relaxed text-white"
-              style={{ color: textColor || 'white' }}
+            {/* TEXT BLOCK - Only appears after phone exits (after image scroll) */}
+            <motion.div 
+              className="w-full text-center flex flex-col gap-6 absolute top-[60vh]"
+              style={{
+                opacity: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START, MOBILE_PHONE_EXIT_END], [0, 1])
+              }}
             >
-              Reveal one of three daily photo prompts. No algorithms, no influencers—just you and your friends capturing life as it happens.
-            </motion.p>
 
-            {/* FEATURES */}
-            <div className="mt-10 flex flex-col gap-4 w-full">
-              {featureCards.map((feature, index) => (
+              {/* HEADERS */}
+              <motion.h2
+                style={{ 
+                  opacity: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START, MOBILE_PHONE_EXIT_START + 0.05], [0, 1]),
+                  y: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START, MOBILE_PHONE_EXIT_START + 0.05], [20, 0]),
+                  color: textColor || 'white'
+                }}
+                className="text-4xl sm:text-5xl font-bold leading-tight"
+              >
+                Daily Prompts.
+              </motion.h2>
+
+              <motion.div
+                style={{ 
+                  opacity: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START + 0.05, MOBILE_PHONE_EXIT_START + 0.1], [0, 1]),
+                  y: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START + 0.05, MOBILE_PHONE_EXIT_START + 0.1], [20, 0])
+                }}
+                className="relative text-2xl sm:text-3xl font-semibold inline-block"
+              >
                 <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                  className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 text-left shadow-lg"
-                >
-                  <h4 className={`text-xl font-semibold mb-2 bg-gradient-to-r ${feature.gradient} text-transparent bg-clip-text`}>
-                    {feature.title}
-                  </h4>
-                  <p 
-                    className="text-sm leading-relaxed text-white" 
-                    style={{ color: textColor || 'white', opacity: 0.8 }}
-                  >
-                    {feature.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
+                  className="absolute -inset-12 -z-10 pointer-events-none"
+                  style={{
+                    opacity: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START + 0.05, MOBILE_PHONE_EXIT_START + 0.1], [0, 1]),
+                    background: GRADIENTS.glow,
+                    filter: 'blur(80px)',
+                  }}
+                />
+                <div className="relative z-0 bg-gradient-to-r from-orange-400 via-red-500 to-purple-600 bg-clip-text text-transparent">
+                  Unfiltered Connections.
+                </div>
+              </motion.div>
+
+              {/* DESCRIPTION */}
+              <motion.p
+                style={{ 
+                  opacity: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START + 0.1, MOBILE_PHONE_EXIT_START + 0.15], [0, 0.8]),
+                  y: useTransform(phoneScroll, [MOBILE_PHONE_EXIT_START + 0.1, MOBILE_PHONE_EXIT_START + 0.15], [20, 0]),
+                  color: textColor || 'white'
+                }}
+                className="text-lg sm:text-xl leading-relaxed"
+              >
+                Reveal one of three daily photo prompts. No algorithms, no influencers—just you and your friends capturing life as it happens.
+              </motion.p>
+
+              {/* FEATURES */}
+              <div className="mt-10 flex flex-col gap-4 w-full">
+                {featureCards.map((feature, index) => {
+                  const featureStart = MOBILE_PHONE_EXIT_START + 0.15 + index * 0.03
+                  const featureEnd = featureStart + 0.03
+                  return (
+                    <motion.div
+                      key={feature.title}
+                      style={{ 
+                        opacity: useTransform(phoneScroll, [featureStart, featureEnd], [0, 1]),
+                        y: useTransform(phoneScroll, [featureStart, featureEnd], [20, 0])
+                      }}
+                      className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 text-left shadow-lg"
+                    >
+                      <h4 className={`text-xl font-semibold mb-2 bg-gradient-to-r ${feature.gradient} text-transparent bg-clip-text`}>
+                        {feature.title}
+                      </h4>
+                      <p 
+                        className="text-sm leading-relaxed text-white" 
+                        style={{ color: textColor || 'white', opacity: 0.8 }}
+                      >
+                        {feature.description}
+                      </p>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -160,7 +244,7 @@ const PhoneScrollytelling = forwardRef(({ textColor }, ref) => {
   // Desktop: Original sticky scrollytelling behavior
   return (
     <section
-      ref={phoneSectionRef}
+      ref={setRef}
       className="relative h-[400vh]"
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
