@@ -3,15 +3,14 @@ import { motion, AnimatePresence, useInView, useScroll, useMotionValueEvent } fr
 import LetterReveal from './LetterReveal'
 
 // --- TUNING VARIABLES ---
-const SPACING = 170          // Controls overall width (Higher = Wider)
-const MOBILE_SPACING = 50   // Controls width on mobile
-const ARCH_STRENGTH = 10    // Controls how much the sides drop down (Lower = Flatter/Less Cutoff)
-const ROTATION_STRENGTH = 8 // Controls how much the sides tilt
+const SPACING = 170          
+const MOBILE_SPACING = 50   
+const ARCH_STRENGTH = 10    
+const ROTATION_STRENGTH = 8 
 // -----------------------------------------------
 
 const TEXT_COMPLETE_THRESHOLD = 0.25
 const REVEAL_START = 0.35
-const REVEAL_END = 0.85
 
 const ImageFan = ({
   images = [],
@@ -20,8 +19,9 @@ const ImageFan = ({
   const [hoveredIndex, setHoveredIndex] = useState(null)
   const [isMobile, setIsMobile] = useState(false)
   const [textComplete, setTextComplete] = useState(false)
-  const [revealedImages, setRevealedImages] = useState(0)
+  const [showImages, setShowImages] = useState(false) // Changed from 'revealedImages' count to a boolean
   const containerRef = useRef(null)
+  // Increased bottom margin so it stays visible longer during exit
   const isInView = useInView(containerRef, { margin: '-10% 0px -10% 0px' })
   const { scrollYProgress: localScroll } = useScroll({
     target: containerRef,
@@ -35,38 +35,23 @@ const ImageFan = ({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Generate placeholders if no images exist
   const allImages = images.length > 0 ? images : Array(5).fill('/api/placeholder/400/800')
-
-  // Mobile: Show 3 images | Desktop: Show all
   const centerOfArray = Math.floor(allImages.length / 2)
   const displayImages = isMobile 
     ? allImages.slice(centerOfArray - 1, centerOfArray + 2) 
     : allImages
 
   const centerIndex = Math.floor(displayImages.length / 2)
-  const totalImages = displayImages.length
   const highlightWord = 'Spontaneous'
   const hasHighlight = title.includes(highlightWord)
   const [prefixPart, suffixPart] = hasHighlight ? title.split(highlightWord) : [title, '']
 
+  // 1. UPDATED SCROLL LOGIC: Trigger all at once
   useMotionValueEvent(localScroll, 'change', (latest) => {
     setTextComplete(latest >= TEXT_COMPLETE_THRESHOLD)
-
-    if (latest < REVEAL_START) {
-      setRevealedImages((prev) => (prev === 0 ? prev : 0))
-      return
-    }
-
-    const clampedProgress = Math.min(1, Math.max(0, (latest - REVEAL_START) / (REVEAL_END - REVEAL_START)))
-    const nextCount = Math.min(totalImages, Math.ceil(clampedProgress * totalImages))
-
-    setRevealedImages((prev) => (prev === nextCount ? prev : nextCount))
+    // As soon as we hit the start line, show ALL images
+    setShowImages(latest >= REVEAL_START)
   })
-
-  useEffect(() => {
-    setRevealedImages(0)
-  }, [totalImages])
 
   return (
     <section
@@ -124,18 +109,15 @@ const ImageFan = ({
               const offset = index - centerIndex
               const isHovered = hoveredIndex === index
               
-              // Dynamic Spacing Logic
               const currentSpacing = isMobile ? MOBILE_SPACING : SPACING
               
-              // "Parting the Sea" - Dynamic push based on spacing
               let extraShift = 0
               if (hoveredIndex !== null && index !== hoveredIndex) {
-                const pushDistance = isMobile ? 40 : 80 // Push further on desktop
+                const pushDistance = isMobile ? 40 : 80 
                 if (index < hoveredIndex) extraShift = -pushDistance
                 if (index > hoveredIndex) extraShift = pushDistance
               }
 
-              // Calculations
               const rotation = isHovered ? 0 : offset * ROTATION_STRENGTH 
               const translateX = (offset * currentSpacing) + extraShift
               const translateY = isHovered ? -40 : Math.abs(offset) * ARCH_STRENGTH 
@@ -143,7 +125,8 @@ const ImageFan = ({
               const scale = isHovered ? 1.15 : 1 - Math.abs(offset) * 0.05
               const zIndex = isHovered ? 50 : 10 - Math.abs(offset)
 
-              const shouldAnimateIn = textComplete && isInView && index < revealedImages
+              // 2. UPDATED CONDITION: Simple boolean check
+              const shouldAnimateIn = textComplete && isInView && showImages
 
               return (
                 <motion.div
@@ -155,7 +138,7 @@ const ImageFan = ({
                   initial={{
                     opacity: 0,
                     y: 180,
-                    scale: 0,
+                    scale: 0.8, // Slightly larger start scale for snappier feel
                     rotate: offset * 15,
                   }}
                   animate={{
@@ -168,10 +151,11 @@ const ImageFan = ({
                   }}
                   transition={{
                     type: 'spring',
-                    stiffness: 220,
-                    damping: 16,
-                    mass: 1.1,
-                    delay: shouldAnimateIn ? index * 0.12 : 0
+                    stiffness: 260, // Increased stiffness (was 220)
+                    damping: 20,    // Increased damping (was 16) to prevent wobble
+                    mass: 1,
+                    // 3. UPDATED DELAY: Reduced from 0.12 to 0.05 for "rapid fire" effect
+                    delay: shouldAnimateIn ? index * 0.05 : 0 
                   }}
                   whileHover={{
                     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
