@@ -4,6 +4,7 @@ import PhoneMockup from './components/PhoneMockup'
 import AppStoreButtons from './components/AppStoreButtons'
 import SocialProof from './components/SocialProof'
 import FeaturesGrid from './components/FeaturesGrid'
+import ImageFan from './components/ImageFan'
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex justify-center lg:justify-end"
           >
-            <PhoneMockup imageSrc="/assets/screenshot.png" />
+            <PhoneMockup imageSrc="/assets/iphone_screenshot.png" />
           </motion.div>
         </div>
 
@@ -42,8 +43,26 @@ function App() {
         >
           <FeaturesGrid />
         </motion.div>
+        <section className="py-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Captured on Spontaneous</h2>
+            <p className="text-gray-400">Hover to see how our community lives in the moment</p>
+          </div>
+
+          <ImageFan
+            images={[
+              '/assets/sc1.jpg',
+              '/assets/sc2.jpg',
+              '/assets/sc3.jpg',
+              '/assets/sc4.jpg',
+              '/assets/sc5.jpg',
+              '/assets/sc6.jpg',
+            ]}
+          />
+        </section>
       </main>
     </div>
+
   )
 }
 

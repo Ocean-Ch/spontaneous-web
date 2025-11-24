@@ -1,7 +1,5 @@
 # Spontaneous - Coming Soon Landing Page
 
-A stunning, high-converting "Coming Soon" landing page for the Spontaneous mobile social media app.
-
 ## Tech Stack
 
 - **React** - UI framework
@@ -37,17 +35,6 @@ npm run build
 ```bash
 npm run preview
 ```
-
-## Features
-
-- ✨ Modern, energetic design with blurple/neon color palette
-- 📱 Responsive layout that works on all devices
-- 🎨 Smooth animations with Framer Motion
-- 📧 Email waitlist form with validation
-- 🎯 Social proof section
-- 📱 3D-style phone mockup
-- 🏪 App Store buttons with "Coming Soon" badges
-- 🎁 Features grid highlighting key differentiators
 
 ## Project Structure
 

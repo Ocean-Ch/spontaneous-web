@@ -47,8 +47,12 @@ const FeaturesGrid = () => {
               key={feature.title}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ duration: 0.6, delay: 0.2 + index * 0.2 }}
+              whileHover={{ 
+                y: -8, 
+                scale: 1.02,
+                transition: { duration: 0.2, delay: 0 } // This forces hover to be instant
+              }}
               className="relative group"
             >
               <div className="h-full p-8 rounded-2xl glass border border-white/10 hover:border-white/20 transition-all backdrop-blur-xl">
