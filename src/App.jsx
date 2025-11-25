@@ -16,21 +16,18 @@ function App() {
   const handleScrollToPhone = () => {
     if (!phoneSectionRef.current) return
 
-    const heroHeight = window.innerHeight * 0.8 // 80vh
+    const heroHeight = window.innerHeight * 0.8
     const phoneSection = phoneSectionRef.current
     
     if (isMobile) {
-      // On mobile, scroll to the phone section with a small offset
       const rect = phoneSection.getBoundingClientRect()
-      const scrollY = window.scrollY + rect.top - 50 // 50px offset from top
+      const scrollY = window.scrollY + rect.top - 50
       window.scrollTo({
         top: scrollY,
         behavior: 'smooth'
       })
     } else {
-      // On desktop, scroll to 10% through the phone section (when phone is fully faded in)
-      // Phone section is 400vh, so 10% = 40vh
-      const phoneFadeInPosition = heroHeight + (window.innerHeight * 0.4) // 80vh + 40vh
+      const phoneFadeInPosition = heroHeight + (window.innerHeight * 0.4)
       window.scrollTo({
         top: phoneFadeInPosition,
         behavior: 'smooth'
@@ -46,12 +43,13 @@ function App() {
     >
       <main className="pb-32">
 
-        {/* HERO */}
-        <section className="h-[80vh] sm:h-[80vh] flex flex-col items-center justify-center relative overflow-hidden">
+        {/* HERO SECTION */}
+        <section className="min-h-[90vh] flex flex-col items-center justify-center relative overflow-hidden py-20">
           <Hero />
+          
+          {/* SCROLL INDICATOR */}
           <ScrollIndicator
-            className="absolute left-1/2 -translate-x-1/2 cursor-pointer"
-            style={{ bottom: 'clamp(1rem, 2vh, 2rem)' }}
+            className="cursor-pointer mt-[-20px] sm:mt-0"
             color={textColor}
             onClick={handleScrollToPhone}
           />
