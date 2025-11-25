@@ -294,7 +294,7 @@ const PhoneScrollytelling = forwardRef(({ textColor }, ref) => {
                 />
               </motion.div>
 
-              <div className="mt-10 flex flex-col md:flex-row gap-4 md:gap-6 w-full">
+              <div className="mt-6 flex flex-col gap-3 md:gap-4 w-full">
                 {featureCards.map((feature, index) => {
                   const yTransform = featureYTransforms[index] || featureYTransforms[0]
                   return (
@@ -303,10 +303,10 @@ const PhoneScrollytelling = forwardRef(({ textColor }, ref) => {
                       delay={index * 0.15}
                       isActive={featureActive[index]}
                       style={{ y: yTransform }}
-                      className={`flex-1 ${FEATURE_CARD_HEIGHT} flex`}
+                      className="w-full"
                     >
-                      <div className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 text-left shadow-lg flex flex-col h-full">
-                        <motion.h4 className={`text-xl font-semibold mb-2 bg-gradient-to-r ${feature.gradient} text-transparent bg-clip-text`}>
+                      <div className="relative rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 md:p-5 text-left shadow-lg">
+                        <motion.h4 className={`text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r ${feature.gradient} text-transparent bg-clip-text`}>
                           {feature.title}
                         </motion.h4>
                         <motion.p className="text-sm leading-relaxed" style={{ color: textColor, opacity: 0.8 }}>
