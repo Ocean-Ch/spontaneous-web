@@ -1,4 +1,6 @@
-# Spontaneous - Coming Soon Landing Page
+# Spontaneous - Landing Page
+
+Live site can be found at: https://www.thespontaneousapp.com/
 
 ## Tech Stack
 
@@ -34,21 +36,5 @@ npm run build
 
 ```bash
 npm run preview
-```
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── Hero.jsx              # Main hero section
-│   ├── WaitlistForm.jsx      # Email input form
-│   ├── PhoneMockup.jsx       # 3D phone container
-│   ├── AppStoreButtons.jsx   # App store badges
-│   ├── SocialProof.jsx       # Waitlist count
-│   └── FeaturesGrid.jsx      # Key features
-├── App.jsx                    # Main app component
-├── main.jsx                   # Entry point
-└── index.css                  # Global styles
 ```
 
