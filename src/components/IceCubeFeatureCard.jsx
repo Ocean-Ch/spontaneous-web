@@ -1,6 +1,20 @@
 import { motion } from 'framer-motion'
 import BubbleReveal from './BubbleReveal'
 
+// --- 🧊 ICE CUBE CONFIGURATION 🧊 ---
+// Tune these values to control the look of the glass
+const GLASS_CONFIG = {
+  // Transparency: 0.0 is invisible, 1.0 is solid white
+  glassOpacityStart: 0.005, // Top-left opacity (The "thickest" part)
+  glassOpacityEnd: 0.0,    // Bottom-right opacity (The "clearest" part)
+  
+  // Refraction: How blurry the content behind the card looks
+  blurStrength: '1px',    // Higher px = frostier/thicker ice. Lower = clear glass.
+
+  // Edge Visibility: The sharp white lines defining the shape
+  borderOpacity: 0.35,     // Opacity of the white highlight borders
+}
+
 const IceCubeFeatureCard = ({ 
   feature, 
   index = 0, 
@@ -19,23 +33,28 @@ const IceCubeFeatureCard = ({
       className={className}
       gradient={feature.gradient}
     >
-      {/* CARD CONTAINER (Ice Cube Effect) */}
+      {/* CARD CONTAINER */}
       <div 
         className="group relative w-full h-full rounded-2xl overflow-hidden transition-transform duration-500 hover:scale-[1.02] hover:-translate-y-1"
         style={{
-          // The Magic: Complex shadows to simulate 3D glass thickness
+          // Complex shadows to simulate 3D thickness
           boxShadow: `
-            0 20px 40px -10px rgba(0, 0, 0, 0.5),        /* Drop shadow for lift */
-            inset 0 1px 0 0 rgba(255, 255, 255, 0.3),    /* Top edge highlight (sharp) */
-            inset 0 0 20px 2px rgba(0, 0, 0, 0.3),       /* Inner depth */
-            inset 0 0 2px 0 rgba(255, 255, 255, 0.1)     /* General rim definition */
+            0 20px 40px -10px rgba(0, 0, 0, 0.5),        
+            inset 0 1px 0 0 rgba(255, 255, 255, ${GLASS_CONFIG.borderOpacity}),
+            inset 0 0 20px 2px rgba(0, 0, 0, 0.3),       
+            inset 0 0 2px 0 rgba(255, 255, 255, 0.1)     
           `,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)', // Safari support
+          backdropFilter: `blur(${GLASS_CONFIG.blurStrength})`,
+          WebkitBackdropFilter: `blur(${GLASS_CONFIG.blurStrength})`,
         }}
       >
-        {/* 1. Base Glass Material (Subtle gradient) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] to-white/[0.01] z-0" />
+        {/* 1. Base Glass Material (Controlled by CONFIG above) */}
+        <div 
+            className="absolute inset-0 z-0"
+            style={{
+                background: `linear-gradient(135deg, rgba(255,255,255,${GLASS_CONFIG.glassOpacityStart}), rgba(255,255,255,${GLASS_CONFIG.glassOpacityEnd}))`
+            }}
+        />
         
         {/* 2. Top Specular Reflection (The "Glossy" top shine) */}
         <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/[0.08] to-transparent pointer-events-none z-0" />
